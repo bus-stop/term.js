@@ -2962,7 +2962,12 @@ Terminal.prototype.resize = function(x, y) {
     el = this.element;
     while (j++ < y) {
       if (this.lines.length < y + this.ybase) {
-        this.lines.push(this.blankLine());
+        if (this.ybase > 0) {
+          this.ydisp = --this.ybase;
+          this.y++;
+        } else {
+          this.lines.push(this.blankLine());
+        }
       }
       if (this.children.length < y) {
         line = this.document.createElement('div');
@@ -2973,7 +2978,12 @@ Terminal.prototype.resize = function(x, y) {
   } else if (j > y) {
     while (j-- > y) {
       if (this.lines.length > y + this.ybase) {
-        this.lines.pop();
+        if (this.isBlankLine(this.lines[this.lines.length - 1])) {
+          this.lines.pop()
+        }
+        else {
+          this.ydisp = ++this.ybase;
+        }
       }
       if (this.children.length > y) {
         el = this.children.pop();
@@ -3097,6 +3107,15 @@ Terminal.prototype.blankLine = function(cur) {
 
   return line;
 };
+
+Terminal.prototype.isBlankLine = function(line) {
+  for (var i = 0; i < line.length; i++) {
+    if (/\S/.test(line[i][1])) {
+      return false;
+    }
+  }
+  return true;
+}
 
 Terminal.prototype.ch = function(cur) {
   return cur
