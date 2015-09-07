@@ -406,8 +406,8 @@ Terminal.colors = (function() {
 })();
 
 // Default BG/FG
-Terminal.colors[256] = '#000000';
-Terminal.colors[257] = '#f0f0f0';
+Terminal.colors[256] = 'inherit';
+Terminal.colors[257] = 'inherit';
 
 Terminal._colors = Terminal.colors.slice();
 
@@ -434,10 +434,10 @@ Terminal.vcolors = (function() {
  */
 
 Terminal.defaults = {
-  colors: Terminal.colors,
+  colors: Terminal.xtermColors,
   convertEol: false,
   termName: 'xterm',
-  geometry: [80, 24],
+  geometry: [80, 40],
   cursorBlink: true,
   visualBell: false,
   popOnBell: false,
@@ -817,25 +817,25 @@ Terminal.prototype.open = function(parent) {
     // This probably shouldn't work,
     // ... but it does. Firefox's paste
     // event seems to only work for textareas?
-    on(this.element, 'mousedown', function(ev) {
-      var button = ev.button != null
-        ? +ev.button
-        : ev.which != null
-          ? ev.which - 1
-          : null;
-
-      // Does IE9 do this?
-      if (self.isMSIE) {
-        button = button === 1 ? 0 : button === 4 ? 1 : button;
-      }
-
-      if (button !== 2) return;
-
-      self.element.contentEditable = 'true';
-      setTimeout(function() {
-        self.element.contentEditable = 'inherit'; // 'false';
-      }, 1);
-    }, true);
+    // on(this.element, 'mousedown', function(ev) {
+    //   var button = ev.button != null
+    //     ? +ev.button
+    //     : ev.which != null
+    //       ? ev.which - 1
+    //       : null;
+    //
+    //   // Does IE9 do this?
+    //   if (self.isMSIE) {
+    //     button = button === 1 ? 0 : button === 4 ? 1 : button;
+    //   }
+    //
+    //   if (button !== 2) return;
+    //
+    //   self.element.contentEditable = 'true';
+    //   setTimeout(function() {
+    //     self.element.contentEditable = 'inherit'; // 'false';
+    //   }, 1);
+    // }, true);
   }
 
   if (!('useMouse' in this.options) || this.options.useMouse) {
@@ -1198,9 +1198,9 @@ Terminal.prototype.bindMouse = function() {
     if (self.mouseEvents) return;
     if (self.applicationKeypad) return;
     if (ev.type === 'DOMMouseScroll') {
-      self.scrollDisp(ev.detail < 0 ? -5 : 5);
+      self.scrollDisp(ev.detail < 0 ? -2 : 2);
     } else {
-      self.scrollDisp(ev.wheelDeltaY > 0 ? -5 : 5);
+      self.scrollDisp(ev.wheelDeltaY > 0 ? -2 : 2);
     }
     return cancel(ev);
   });
