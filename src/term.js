@@ -1409,6 +1409,10 @@ Terminal.prototype.refresh = function(start, end) {
     if (attr !== this.defAttr) {
       out += '</span>';
     }
+    out = out.replace(/(&nbsp;)+$/, '');
+    if (!out) {
+      out = '&nbsp;'
+    }
 
     this.children[y].innerHTML = out;
   }
