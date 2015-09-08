@@ -254,6 +254,7 @@ function Terminal(options) {
   this.queue = '';
   this.scrollTop = 0;
   this.scrollBottom = this.rows - 1;
+  this.scrolling = false;
 
   // modes
   this.applicationKeypad = false;
@@ -1459,7 +1460,9 @@ Terminal.prototype.scroll = function() {
     this.lines = this.lines.slice(-(this.ybase + this.rows) + 1);
   }
 
-  this.ydisp = this.ybase;
+  if (!this.scrolling) {
+    this.ydisp = this.ybase;
+  }
 
   // last line
   row = this.ybase + this.rows - 1;
@@ -1500,8 +1503,18 @@ Terminal.prototype.scrollDisp = function(disp) {
     this.ydisp = 0;
   }
 
+  if (this.ydisp == this.ybase) {
+    this.scrolling = false;
+  } else {
+    this.scrolling = true;
+  }
+
   this.refresh(0, this.rows - 1);
 };
+
+Terminal.prototype.isScrolling = function() {
+  return this.scrolling;
+}
 
 Terminal.prototype.write = function(data) {
   var l = data.length
@@ -1513,10 +1526,10 @@ Terminal.prototype.write = function(data) {
   this.refreshStart = this.y;
   this.refreshEnd = this.y;
 
-  if (this.ybase !== this.ydisp) {
-    this.ydisp = this.ybase;
-    this.maxRange();
-  }
+  // if (this.ybase !== this.ydisp) {
+  //   this.ydisp = this.ybase;
+  //   this.maxRange();
+  // }
 
   // this.log(JSON.stringify(data.replace(/\x1b/g, '^[')));
 
