@@ -1516,6 +1516,10 @@ Terminal.prototype.isScrolling = function() {
   return this.scrolling;
 }
 
+Terminal.prototype.stopScrolling = function() {
+  this.scrolling = false;
+}
+
 Terminal.prototype.write = function(data) {
   var l = data.length
     , i = 0
@@ -1526,10 +1530,10 @@ Terminal.prototype.write = function(data) {
   this.refreshStart = this.y;
   this.refreshEnd = this.y;
 
-  // if (this.ybase !== this.ydisp) {
-  //   this.ydisp = this.ybase;
-  //   this.maxRange();
-  // }
+  if (!this.scrolling) {
+    this.ydisp = this.ybase;
+    this.maxRange();
+  }
 
   // this.log(JSON.stringify(data.replace(/\x1b/g, '^[')));
 
