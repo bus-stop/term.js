@@ -2995,8 +2995,10 @@ Terminal.prototype.resize = function(x, y) {
   } else if (j > y) {
     while (j-- > y) {
       if (this.lines.length > y + this.ybase) {
-        if (this.isBlankLine(this.lines[this.lines.length - 1])) {
-          this.lines.pop()
+        if (this.isBlankLine(this.lines[j])) {
+          if (j != this.y) {
+            this.lines.pop();
+          }
         }
         else {
           this.ydisp = ++this.ybase;
