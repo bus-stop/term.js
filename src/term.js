@@ -1277,7 +1277,6 @@ Terminal.prototype.refresh = function(start, end) {
     if (parent) parent.removeChild(this.element);
   }
 
-  width = this.cols;
   y = start;
 
   if (end >= this.lines.length) {
@@ -1288,7 +1287,7 @@ Terminal.prototype.refresh = function(start, end) {
   for (; y <= end; y++) {
     row = y + this.ydisp;
 
-    line = this.lines[row];
+    line = this.lines[row] || [];
     out = '';
 
     if (y === this.y
@@ -1303,7 +1302,7 @@ Terminal.prototype.refresh = function(start, end) {
     attr = this.defAttr;
     i = 0;
 
-    for (; i < width; i++) {
+    for (; i < line.length; i++) {
       data = line[i][0];
       ch = line[i][1];
 
