@@ -2977,13 +2977,11 @@ Terminal.prototype.resize = function(x, y) {
   if (j < y) {
     el = this.element;
     while (j++ < y) {
-      if (this.lines.length < y + this.ybase) {
-        if (this.ybase > 0) {
-          this.ydisp = --this.ybase;
-          this.y++;
-        } else {
-          this.lines.push(this.blankLine());
-        }
+      if (this.ybase > 0) {
+        this.ydisp = --this.ybase;
+        this.y++;
+      } else {
+        this.lines.push(this.blankLine());
       }
       if (this.children.length < y) {
         line = this.document.createElement('div');
@@ -2993,15 +2991,12 @@ Terminal.prototype.resize = function(x, y) {
     }
   } else if (j > y) {
     while (j-- > y) {
-      if (this.lines.length > y + this.ybase) {
-        if (this.isBlankLine(this.lines[j])) {
-          if (j != this.y) {
-            this.lines.pop();
-          }
+      if (this.isBlankLine(this.lines[this.lines.length - 1])) {
+        if (this.lines.length - 1 != this.y) {
+          this.lines.pop();
         }
-        else {
-          this.ydisp = ++this.ybase;
-        }
+      } else {
+        this.ydisp = ++this.ybase;
       }
       if (this.children.length > y) {
         el = this.children.pop();
