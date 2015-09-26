@@ -237,7 +237,6 @@ function Terminal(options) {
   this.isTTY = true;
   this.isRaw = true;
   this.columns = this.cols;
-  this.rows = this.rows;
 
   if (options.handler) {
     this.on('data', options.handler);
@@ -1528,11 +1527,6 @@ Terminal.prototype.write = function(data) {
 
   this.refreshStart = this.y;
   this.refreshEnd = this.y;
-
-  if (!this.scrolling) {
-    this.ydisp = this.ybase;
-    this.maxRange();
-  }
 
   // this.log(JSON.stringify(data.replace(/\x1b/g, '^[')));
 
@@ -2963,8 +2957,10 @@ Terminal.prototype.resize = function(x, y) {
   } else if (j > x) {
     i = this.lines.length;
     while (i--) {
-      while (this.lines[i].length > x) {
+      var lastCol = j;
+      while (this.lines[i][lastCol] == ' ') {
         this.lines[i].pop();
+        lastCol--;
       }
     }
   }
@@ -5912,6 +5908,7 @@ function indexOf(obj, el) {
 }
 
 function isWide(ch) {
+  if (ch == '\u2587') return true;
   if (ch <= '\uff00') return false;
   return (ch >= '\uff01' && ch <= '\uffbe')
       || (ch >= '\uffc2' && ch <= '\uffc7')
