@@ -253,7 +253,7 @@ function Terminal(options) {
   this.queue = '';
   this.scrollTop = 0;
   this.scrollBottom = this.rows - 1;
-  this.scrolling = false;
+  this.isScrolling = false;
 
   // modes
   this.applicationKeypad = false;
@@ -1458,7 +1458,7 @@ Terminal.prototype.scroll = function() {
     this.lines = this.lines.slice(-(this.ybase + this.rows) + 1);
   }
 
-  if (!this.scrolling) {
+  if (!this.isScrolling) {
     this.ydisp = this.ybase;
   }
 
@@ -1501,21 +1501,17 @@ Terminal.prototype.scrollDisp = function(disp) {
     this.ydisp = 0;
   }
 
-  if (this.ydisp == this.ybase) {
-    this.scrolling = false;
+  if (this.ydisp === this.ybase) {
+    this.isScrolling = false;
   } else {
-    this.scrolling = true;
+    this.isScrolling = true;
   }
 
   this.refresh(0, this.rows - 1);
 };
 
-Terminal.prototype.isScrolling = function() {
-  return this.scrolling;
-}
-
 Terminal.prototype.stopScrolling = function() {
-  this.scrolling = false;
+  this.isScrolling = false;
 }
 
 Terminal.prototype.write = function(data) {
