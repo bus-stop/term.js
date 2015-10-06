@@ -1196,7 +1196,6 @@ Terminal.prototype.bindMouse = function() {
   // the shell for example
   on(el, wheelEvent, function(ev) {
     if (self.mouseEvents) return;
-    if (self.applicationKeypad) return;
     if (ev.type === 'DOMMouseScroll') {
       self.scrollDisp(ev.detail < 0 ? -2 : 2);
     } else {
@@ -1523,6 +1522,11 @@ Terminal.prototype.write = function(data) {
 
   this.refreshStart = this.y;
   this.refreshEnd = this.y;
+
+  if (!this.isScrolling) {
+    this.ydisp = this.ybase;
+    this.maxRange();
+  }
 
   // this.log(JSON.stringify(data.replace(/\x1b/g, '^[')));
 
