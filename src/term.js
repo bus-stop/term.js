@@ -373,10 +373,31 @@ Terminal.xtermColors = [
   '#ffffff'  // white
 ];
 
+Terminal.terminalColors = [
+  // dark:
+  '#000000', // black
+  '#990000', // red3
+  '#00A600', // green3
+  '#999900', // yellow3
+  '#0001B2', // blue2
+  '#B200B3', // magenta3
+  '#01A6B2', // cyan3
+  '#BFBFBF', // gray90
+  // bright:
+  '#666666', // gray50
+  '#ff0000', // red
+  '#00ff00', // green
+  '#ffff00', // yellow
+  '#0000ff', // blue
+  '#ff00ff', // magenta
+  '#00ffff', // cyan
+  '#ffffff'  // white
+];
+
 // Colors 0-15 + 16-255
 // Much thanks to TooTallNate for writing this.
 Terminal.colors = (function() {
-  var colors = Terminal.tangoColors.slice()
+  var colors = Terminal.terminalColors.slice()
     , r = [0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff]
     , i;
 
@@ -434,9 +455,9 @@ Terminal.vcolors = (function() {
  */
 
 Terminal.defaults = {
-  colors: Terminal.xtermColors,
+  colors: Terminal.colors,
   convertEol: false,
-  termName: 'xterm',
+  termName: 'xterm-256color',
   geometry: [80, 40],
   cursorBlink: true,
   visualBell: false,
