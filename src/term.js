@@ -231,6 +231,7 @@ function Terminal(options) {
 
   this.cols = options.cols || options.geometry[0];
   this.rows = options.rows || options.geometry[1];
+  this.rowHeight = 20;
 
   // Act as though we are a node TTY stream:
   this.setRawMode;
@@ -1214,9 +1215,9 @@ Terminal.prototype.bindMouse = function() {
   on(el, wheelEvent, function(ev) {
     if (self.mouseEvents) return;
     if (ev.type === 'DOMMouseScroll') {
-      self.scrollDisp(ev.detail < 0 ? -2 : 2);
+      self.scrollDisp(ev.detail);
     } else {
-      self.scrollDisp(ev.wheelDeltaY > 0 ? -2 : 2);
+      self.scrollDisp(ev.deltaY);
     }
     return cancel(ev);
   });
@@ -1509,6 +1510,13 @@ Terminal.prototype.scroll = function() {
 };
 
 Terminal.prototype.scrollDisp = function(disp) {
+  if(disp > 0)
+  {
+    disp = Math.ceil(disp / this.rowHeight);
+  } else {
+    disp = Math.floor(disp / this.rowHeight);
+  }
+
   this.ydisp += disp;
 
   if (this.ydisp > this.ybase) {
