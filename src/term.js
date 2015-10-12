@@ -255,6 +255,7 @@ function Terminal(options) {
   this.scrollTop = 0;
   this.scrollBottom = this.rows - 1;
   this.isScrolling = false;
+  this.scrollingDelta = 0;
 
   // modes
   this.applicationKeypad = false;
@@ -1214,11 +1215,8 @@ Terminal.prototype.bindMouse = function() {
   // the shell for example
   on(el, wheelEvent, function(ev) {
     if (self.mouseEvents) return;
-    if (ev.type === 'DOMMouseScroll') {
-      self.scrollDisp(ev.detail);
-    } else {
-      self.scrollDisp(ev.deltaY);
-    }
+    self.scrollingDelta += ev.deltaY;
+    self.scrollDisp();
     return cancel(ev);
   });
 };
@@ -1509,12 +1507,17 @@ Terminal.prototype.scroll = function() {
   this.updateRange(this.scrollBottom);
 };
 
-Terminal.prototype.scrollDisp = function(disp) {
-  if(disp > 0)
+Terminal.prototype.scrollDisp = function() {
+  var lines = this.scrollingDelta / this.rowHeight;
+  var disp;
+
+  if(lines > 0)
   {
-    disp = Math.ceil(disp / this.rowHeight);
+    disp = Math.floor(lines);
+    this.scrollingDelta %= this.rowHeight;
   } else {
-    disp = Math.floor(disp / this.rowHeight);
+    disp = Math.ceil(lines);
+    this.scrollingDelta %= this.rowHeight;
   }
 
   this.ydisp += disp;
