@@ -1432,6 +1432,7 @@ Terminal.prototype.refresh = function(start, end) {
   }
 
   if (parent) parent.appendChild(this.element);
+  if (Terminal.focus == this) this.element.focus();
 };
 
 Terminal.prototype._cursorBlink = function() {
