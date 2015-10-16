@@ -1508,9 +1508,8 @@ Terminal.prototype.scroll = function() {
   this.updateRange(this.scrollBottom);
 };
 
-Terminal.prototype.scrollDisp = function() {
+Terminal.prototype.scrollDisp = function(disp) {
   var lines = this.scrollingDelta / this.rowHeight;
-  var disp;
 
   if(lines > 0)
   {
@@ -2849,6 +2848,11 @@ Terminal.prototype.keyDown = function(ev) {
         } else if (ev.keyCode >= 48 && ev.keyCode <= 57) {
           key = '\x1b' + (ev.keyCode - 48);
         }
+      } else if (ev.metaKey) {
+        if(ev.keyCode === 75) {
+          this.write('\x1b[3J');
+          key = '\x0C';
+        }
       }
       break;
   }
@@ -3326,7 +3330,7 @@ Terminal.prototype.eraseInDisplay = function(params) {
       while (j--) this.eraseLine(j);
       break;
     case 3:
-      ; // no saved lines
+      this.reset(); // no saved lines
       break;
   }
 };
