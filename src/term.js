@@ -1546,7 +1546,8 @@ Terminal.prototype.write = function(data) {
     , i = 0
     , j
     , cs
-    , ch;
+    , ch
+    , prev;
 
   this.refreshStart = this.y;
   this.refreshEnd = this.y;
@@ -1556,10 +1557,24 @@ Terminal.prototype.write = function(data) {
     this.maxRange();
   }
 
+  // var toUnicode = function(theString) {
+  //   var unicodeString = '';
+  //   for (var i=0; i < theString.length; i++) {
+  //     var theUnicode = theString.charCodeAt(i).toString(16).toUpperCase();
+  //     while (theUnicode.length < 4) {
+  //       theUnicode = '0' + theUnicode;
+  //     }
+  //     theUnicode = '\\u' + theUnicode;
+  //     unicodeString += theUnicode;
+  //   }
+  //   return unicodeString;
+  // }
+
   // this.log(JSON.stringify(data.replace(/\x1b/g, '^[')));
 
   for (; i < l; i++, this.lch = ch) {
     ch = data[i];
+    // console.log(ch, toUnicode(ch), this.x, this.y);
     switch (this.state) {
       case normal:
         switch (ch) {
@@ -1598,7 +1613,15 @@ Terminal.prototype.write = function(data) {
           // '\b'
           case '\x08':
             if (this.x > 0) {
-              this.x--;
+              prev = this.lines[this.y][this.x - 1];
+              if(isEastAsian(prev[1]))
+              {
+                prev[1] = '';
+              }
+              else
+              {
+                this.x--;
+              }
             }
             break;
 
@@ -5950,6 +5973,18 @@ function isWide(ch) {
       || (ch >= '\uffda' && ch <= '\uffdc')
       || (ch >= '\uffe0' && ch <= '\uffe6')
       || (ch >= '\uffe8' && ch <= '\uffee');
+}
+
+function isEastAsian(ch) {
+  return (ch >= '\u3000' && ch <= '\u30FF')
+      || (ch >= '\u31F0' && ch <= '\u31FF')
+      || (ch >= '\u3300' && ch <= '\u4DFF')
+      || (ch >= '\u4E00' && ch <= '\u9FFF')
+      || (ch >= '\uF900' && ch <= '\uFAFF')
+      || (ch >= '\uFF00' && ch <= '\uFFEF')
+      || (ch >= '\u20000' && ch <= '\u2A6DF')
+      || (ch >= '\u2A700' && ch <= '\u2B734')
+      || (ch >= '\u2F800' && ch <= '\u2FA1F')
 }
 
 function matchColor(r1, g1, b1) {
