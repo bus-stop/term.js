@@ -2875,9 +2875,11 @@ Terminal.prototype.keyDown = function(ev) {
           key = '\x1b' + (ev.keyCode - 48);
         }
       } else if (ev.metaKey) {
-        if(ev.keyCode === 75) {
-          this.write('\x1b[3J');
-          key = '\x0C';
+        if (!ev.shiftKey) {
+          if(ev.keyCode === 75) {
+            this.write('\x1b[3J');
+            key = '\x0C';
+          }
         }
       }
       break;
