@@ -2998,7 +2998,8 @@ Terminal.prototype.resize = function(x, y) {
     , el
     , i
     , j
-    , ch;
+    , ch
+    , line;
 
   if (x < 1) x = 1;
   if (y < 1) y = 1;
@@ -3046,10 +3047,9 @@ Terminal.prototype.resize = function(x, y) {
     }
   } else if (j > y) {
     while (j-- > y) {
-      if (this.isBlankLine(this.lines[this.lines.length - 1])) {
-        if (this.lines.length - 1 != this.y) {
-          this.lines.pop();
-        }
+      line = this.lines[this.lines.length - 1];
+      if ((this.y !== this.rows - 1) && this.isBlankLine(line)) {
+        this.lines.pop();
       } else {
         this.ydisp = ++this.ybase;
       }
@@ -3178,7 +3178,7 @@ Terminal.prototype.blankLine = function(cur) {
 
 Terminal.prototype.isBlankLine = function(line) {
   for (var i = 0; i < line.length; i++) {
-    if (/\S/.test(line[i][1])) {
+    if (line[i][1] !== ' ') {
       return false;
     }
   }
