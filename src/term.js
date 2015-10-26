@@ -256,6 +256,7 @@ function Terminal(options) {
   this.scrollBottom = this.rows - 1;
   this.isScrolling = false;
   this.scrollingDelta = 0;
+  this.altLocation = 1;
 
   // modes
   this.applicationKeypad = false;
@@ -2653,7 +2654,6 @@ Terminal.prototype.pause = function() {
 Terminal.prototype.keyDown = function(ev) {
   var self = this
     , key;
-
   switch (ev.keyCode) {
     // backspace
     case 8:
@@ -2678,6 +2678,10 @@ Terminal.prototype.keyDown = function(ev) {
     // return/enter
     case 13:
       key = '\r';
+      break;
+    // alt-key location
+    case 18:
+      this.altLocation = ev.location;
       break;
     // escape
     case 27:
@@ -2866,7 +2870,7 @@ Terminal.prototype.keyDown = function(ev) {
           // ^] - group sep
           key = String.fromCharCode(29);
         }
-      } else if (ev.altKey) {
+      } else if (ev.altKey && this.altLocation === 2) {
         if (ev.keyCode >= 65 && ev.keyCode <= 90) {
           key = '\x1b' + String.fromCharCode(ev.keyCode + 32);
         } else if (ev.keyCode === 192) {
