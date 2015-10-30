@@ -400,7 +400,7 @@ Terminal.terminalColors = [
 // Colors 0-15 + 16-255
 // Much thanks to TooTallNate for writing this.
 Terminal.colors = (function() {
-  var colors = Terminal.terminalColors.slice()
+  var colors = Terminal.xtermColors.slice()
     , r = [0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff]
     , i;
 
@@ -2830,7 +2830,7 @@ Terminal.prototype.keyDown = function(ev) {
       break;
     default:
       // a-z and space
-      if (ev.ctrlKey) {
+      if (ev.ctrlKey && !ev.shiftKey) {
         if (ev.keyCode >= 65 && ev.keyCode <= 90) {
           // Ctrl-A
           if (this.screenKeys) {
@@ -2878,12 +2878,10 @@ Terminal.prototype.keyDown = function(ev) {
         } else if (ev.keyCode >= 48 && ev.keyCode <= 57) {
           key = '\x1b' + (ev.keyCode - 48);
         }
-      } else if (ev.metaKey) {
-        if (!ev.shiftKey) {
-          if(ev.keyCode === 75) {
-            this.write('\x1b[3J');
-            key = '\x0C';
-          }
+      } else if (ev.metaKey && !ev.shiftKey) {
+        if(ev.keyCode === 75) {
+          this.write('\x1b[3J');
+          key = '\x0C';
         }
       }
       break;
