@@ -3028,9 +3028,9 @@ Terminal.prototype.resize = function(x, y) {
       }
     }
   }
-  this.setupStops(j);
   this.cols = x;
   this.columns = x;
+  this.setupStops(j);
 
   // resize rows
   j = this.rows;
