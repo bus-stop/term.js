@@ -1379,12 +1379,6 @@ Terminal.prototype.refresh = function(start, end) {
           //   + 'term-fg-color-' + fg
           //   + '">';
 
-          if (bg !== 256) {
-            out += 'background-color:'
-              + this.colors[bg]
-              + ';';
-          }
-
           if (fg !== 257) {
             out += 'color:'
               + this.colors[fg]
@@ -1395,7 +1389,12 @@ Terminal.prototype.refresh = function(start, end) {
             out += '" class="reverse-video terminal-cursor';
             cursor = false;
             data = -1;
+          } else if (bg !== 256) {
+            out += 'background-color:'
+              + this.colors[bg]
+              + ';';
           }
+
           out += '">';
         }
       }
@@ -2927,17 +2926,9 @@ Terminal.prototype.keyPress = function(ev) {
 
   cancel(ev);
 
-  if (ev.charCode) {
-    key = ev.charCode;
-  } else if (ev.which == null) {
-    key = ev.keyCode;
-  } else if (ev.which !== 0 && ev.charCode !== 0) {
-    key = ev.which;
-  } else {
-    return false;
-  }
+  key = ev.which || ev.keyCode;
 
-  if (!key || ev.ctrlKey || ev.altKey || ev.metaKey) return false;
+  if (!key || ev.ctrlKey || (ev.altKey && this.altLocation === 2) || ev.metaKey) return false;
 
   key = String.fromCharCode(key);
 
@@ -5973,27 +5964,29 @@ function indexOf(obj, el) {
 }
 
 function isWide(ch) {
-  if (ch == '\u2587') return true;
-  if (ch <= '\uff00') return false;
-  return (ch >= '\uff01' && ch <= '\uffbe')
-      || (ch >= '\uffc2' && ch <= '\uffc7')
-      || (ch >= '\uffca' && ch <= '\uffcf')
-      || (ch >= '\uffd2' && ch <= '\uffd7')
-      || (ch >= '\uffda' && ch <= '\uffdc')
-      || (ch >= '\uffe0' && ch <= '\uffe6')
-      || (ch >= '\uffe8' && ch <= '\uffee');
+  ch = ch.charCodeAt(0);
+  if (ch == 0x02587) return true;
+  if (ch <= 0x0ff00) return false;
+  return (ch >= 0x0ff01 && ch <= 0x0ffbe)
+      || (ch >= 0x0ffc2 && ch <= 0x0ffc7)
+      || (ch >= 0x0ffca && ch <= 0x0ffcf)
+      || (ch >= 0x0ffd2 && ch <= 0x0ffd7)
+      || (ch >= 0x0ffda && ch <= 0x0ffdc)
+      || (ch >= 0x0ffe0 && ch <= 0x0ffe6)
+      || (ch >= 0x0ffe8 && ch <= 0x0ffee);
 }
 
 function isEastAsian(ch) {
-  return (ch >= '\u3000' && ch <= '\u30FF')
-      || (ch >= '\u31F0' && ch <= '\u31FF')
-      || (ch >= '\u3300' && ch <= '\u4DFF')
-      || (ch >= '\u4E00' && ch <= '\u9FFF')
-      || (ch >= '\uF900' && ch <= '\uFAFF')
-      || (ch >= '\uFF00' && ch <= '\uFFEF')
-      || (ch >= '\u20000' && ch <= '\u2A6DF')
-      || (ch >= '\u2A700' && ch <= '\u2B734')
-      || (ch >= '\u2F800' && ch <= '\u2FA1F')
+  ch = ch.charCodeAt(0);
+  return (ch >= 0x03000 && ch <= 0x030FF)
+      || (ch >= 0x031F0 && ch <= 0x031FF)
+      || (ch >= 0x03300 && ch <= 0x04DFF)
+      || (ch >= 0x04E00 && ch <= 0x09FFF)
+      || (ch >= 0x0F900 && ch <= 0x0FAFF)
+      || (ch >= 0x0FF00 && ch <= 0x0FFEF)
+      || (ch >= 0x20000 && ch <= 0x2A6DF)
+      || (ch >= 0x2A700 && ch <= 0x2B734)
+      || (ch >= 0x2F800 && ch <= 0x2FA1F)
 }
 
 function matchColor(r1, g1, b1) {
