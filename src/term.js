@@ -2832,7 +2832,7 @@ Terminal.prototype.keyDown = function(ev) {
       break;
     default:
       // a-z and space
-      if (ev.ctrlKey && !ev.shiftKey) {
+      if (ev.ctrlKey && !ev.shiftKey && !ev.altKey && !ev.metaKey) {
         if (ev.keyCode >= 65 && ev.keyCode <= 90) {
           // Ctrl-A
           if (this.screenKeys) {
