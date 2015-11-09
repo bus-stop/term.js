@@ -1217,7 +1217,18 @@ Terminal.prototype.bindMouse = function() {
   on(el, wheelEvent, function(ev) {
     if (self.mouseEvents) return;
     self.scrollingDelta += ev.deltaY;
-    self.scrollDisp();
+    var lines = self.scrollingDelta / self.rowHeight,
+        disp;
+
+    if (lines > 0)
+    {
+      disp = Math.floor(lines);
+    } else {
+      disp = Math.ceil(lines);
+    }
+    self.scrollingDelta %= self.rowHeight;
+
+    self.scrollDisp(disp);
     return cancel(ev);
   });
 };
@@ -1514,17 +1525,6 @@ Terminal.prototype.scroll = function() {
 };
 
 Terminal.prototype.scrollDisp = function(disp) {
-  var lines = this.scrollingDelta / this.rowHeight;
-
-  if(lines > 0)
-  {
-    disp = Math.floor(lines);
-    this.scrollingDelta %= this.rowHeight;
-  } else {
-    disp = Math.ceil(lines);
-    this.scrollingDelta %= this.rowHeight;
-  }
-
   this.ydisp += disp;
 
   if (this.ydisp > this.ybase) {
@@ -3058,6 +3058,7 @@ Terminal.prototype.resize = function(x, y) {
     }
   }
   this.rows = y;
+  this.rowHeight = this.children[0].offsetHeight
 
   // make sure the cursor stays on screen
   if (this.y >= y) this.y = y - 1;
