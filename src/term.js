@@ -698,14 +698,15 @@ Terminal.prototype.getTextarea = function(document) {
 
   var onInputTimestamp;
 
-  var onInput = function(ev){
-    if(ev.timeStamp && ev.timeStamp === onInputTimestamp){
+  var onInput = function(ev) {
+    if (ev.timeStamp && ev.timeStamp === onInputTimestamp) {
       return;
     }
     onInputTimestamp = ev.timeStamp;
+    self.stopScrolling(true);
 
     var value = textarea.textContent || textarea.value;
-    if (typeof self.select.startPos !== 'undefined'){
+    if (typeof self.select.startPos !== 'undefined') {
       self.select = {};
       self.clearSelectedText();
       self.refresh(0, this.rows - 1);
@@ -731,7 +732,7 @@ Terminal.prototype.getTextarea = function(document) {
     }, 1);
   });
 
-  on(textarea, 'keydown', function(){
+  on(textarea, 'keydown', function() {
     var value = textarea.textContent || textarea.value;
   });
 
@@ -944,7 +945,7 @@ Terminal.prototype.open = function(parent) {
       self.select.timer = setTimeout(function(){
         self.select.timer = null;
       }, 600);
-    }else{
+    } else {
       self.select.clicks = ev.detail;
     }
 
@@ -1796,8 +1797,15 @@ Terminal.prototype.scrollDisp = function(disp) {
   this.refresh(0, this.rows - 1);
 };
 
-Terminal.prototype.stopScrolling = function() {
+Terminal.prototype.stopScrolling = function(refresh) {
+  var wasScrolling = this.isScrolling;
+
   this.isScrolling = false;
+  if (wasScrolling && refresh)
+  {
+    this.ydisp = this.ybase;
+    this.refresh(0, this.rows - 1);
+  }
 }
 
 Terminal.prototype.write = function(data) {
@@ -3135,6 +3143,8 @@ Terminal.prototype.keyDown = function(ev) {
   }
 
   if (!key) return true;
+
+  this.stopScrolling(true);
 
   if (this.prefixMode) {
     this.leavePrefix();
