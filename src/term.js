@@ -231,7 +231,6 @@ function Terminal(options) {
 
   this.cols = options.cols || options.geometry[0];
   this.rows = options.rows || options.geometry[1];
-  this.rowHeight = 20;
 
   // Act as though we are a node TTY stream:
   this.setRawMode;
@@ -257,6 +256,8 @@ function Terminal(options) {
   this.isScrolling = false;
   this.scrollingDelta = 0;
   this.altLocation = 1;
+  this.characterHeight = 20;
+  this.characterWidth = 9;
 
   // modes
   this.applicationKeypad = false;
@@ -1451,7 +1452,7 @@ Terminal.prototype.bindMouse = function() {
   on(el, wheelEvent, function(ev) {
     if (self.mouseEvents) return;
     self.scrollingDelta += ev.deltaY;
-    var lines = self.scrollingDelta / self.rowHeight,
+    var lines = self.scrollingDelta / self.characterHeight,
         disp;
 
     if (lines > 0)
@@ -1460,7 +1461,7 @@ Terminal.prototype.bindMouse = function() {
     } else {
       disp = Math.ceil(lines);
     }
-    self.scrollingDelta %= self.rowHeight;
+    self.scrollingDelta %= self.characterHeight;
 
     self.scrollDisp(disp);
     return cancel(ev);
@@ -1533,8 +1534,6 @@ Terminal.prototype.refresh = function(start, end) {
     , row
     , parent;
 
-  var characterWidth = this.element.clientWidth / this.cols;
-  var characterHeight = this.element.clientHeight / this.rows;
   var focused;
 
   if (end - start >= this.rows / 2) {
@@ -1665,7 +1664,10 @@ Terminal.prototype.refresh = function(start, end) {
           } else {
             if (isWide(ch)) {
               i++;
-              out += '<span style="display:inline-block; width:' + characterWidth * 2 + 'px; height:' + characterHeight + 'px; line-height:' + characterHeight + 'px;">' + ch + '</span>';
+              out += '<span style="display:inline-block; width:'
+                      + this.characterWidth * 2 + 'px; height:'
+                      + this.characterHeight + 'px; line-height:'
+                      + this.characterHeight + 'px;">' + ch + '</span>';
             } else {
               out += ch;
             }
@@ -3317,7 +3319,8 @@ Terminal.prototype.resize = function(x, y) {
     }
   }
   this.rows = y;
-  this.rowHeight = this.children[0].offsetHeight
+  this.characterWidth = this.element.clientWidth / this.cols;
+  this.characterHeight = this.element.clientHeight / this.rows;
 
   // make sure the cursor stays on screen
   if (this.y >= y) this.y = y - 1;
