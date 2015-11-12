@@ -3303,6 +3303,7 @@ Terminal.prototype.resize = function(x, y) {
       line = this.lines[this.lines.length - 1];
       if ((this.y !== this.rows - 1) && this.isBlankLine(line)) {
         this.lines.pop();
+        this.rows--;
       } else {
         this.ydisp = ++this.ybase;
       }
