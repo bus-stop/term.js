@@ -488,10 +488,6 @@ each(keys(Terminal.defaults), function(key) {
 Terminal.focus = null;
 
 Terminal.prototype.focus = function() {
-  if (this._textarea) {
-    this._textarea.focus();
-  }
-
   if (Terminal.focus === this) return;
 
   if (Terminal.focus) {
@@ -508,6 +504,10 @@ Terminal.prototype.focus = function() {
   // }
 
   // this.emit('focus');
+
+  if (this._textarea) {
+    this._textarea.focus();
+  }
 
   Terminal.focus = this;
 };
@@ -848,141 +848,140 @@ Terminal.prototype.open = function(parent) {
   // Draw the screen.
   this.refresh(0, this.rows - 1);
 
-
-  var updateSelect = function(){
-    var startPos = self.select.startPos;
-    var endPos = self.select.endPos;
-
-    if(endPos.y < startPos.y || (startPos.y == endPos.y && endPos.x < startPos.x)){
-      var tmp = startPos;
-      startPos = endPos;
-      endPos = tmp;
-    }
-    if (self.select.clicks === 2){
-      var j = i;
-      var isMark = function(ch){
-        var code = ch.charCodeAt(0);
-        return (code <= 0x2f) || (0x3a <= code && code <= 0x40) || (0x5b <= code && code < 0x60) || (0x7b <= code && code <= 0x7f);
-      }
-      while (startPos.x > 0 && !isMark(self.lines[startPos.y][startPos.x-1][1])){
-        startPos.x--;
-      }
-      while (endPos.x < self.cols && !isMark(self.lines[endPos.y][endPos.x][1])){
-        endPos.x++;
-      }
-    }else if(self.select.clicks === 3){
-      startPos.x = 0;
-      endPos.y ++;
-      endPos.x = 0;
-    }
-
-    if (startPos.x === endPos.x && startPos.y === endPos.y){
-      self.clearSelectedText();
-    }else{
-      var x2 = self.select.endPos.x;
-      var y2 = self.select.endPos.y;
-      x2 --;
-      if(x2<0){
-        y2--;
-        x2 = self.cols - 1;
-      }
-      self.selectText(self.select.startPos.x, x2, self.select.startPos.y, y2);
-    }
-  };
-  var copySelectToTextarea = function (){
-      var textarea = self._textarea;
-      if (textarea) {
-
-        if (self.select.startPos.x === self.select.endPos.x && self.select.startPos.y === self.select.endPos.y){
-          textarea.value = "";
-          textarea.select();
-          return;
-        }
-
-        var x2 = self.select.endPos.x;
-        var y2 = self.select.endPos.y;
-        x2 --;
-        if(x2<0){
-          y2--;
-          x2 = self.cols - 1;
-        }
-
-        var value = self.grabText(self.select.startPos.x, x2, self.select.startPos.y, y2);
-        textarea.value = value;
-        textarea.select();
-      }
-  };
-  on(this.element, 'mousedown', function(ev) {
-
-    if(ev.button === 2){
-
-      var r = self.element.getBoundingClientRect();
-
-      var x = ev.pageX - r.left  + self.element.offsetLeft;
-      var y = ev.pageY - r.top  + self.element.offsetTop;
-
-      self._textarea.style.left = x  + 'px';
-      self._textarea.style.top = y  + 'px';
-      return;
-    }
-
-    if (ev.button != 0){
-      return;
-    }
-    if (navigator.userAgent.indexOf("Trident")){
-      /* IE does not hold click number as "detail" property. */
-      if (self.select.timer){
-        self.select.clicks ++;
-        clearTimeout(self.select.timer);
-        self.select.timer = null;
-      }else{
-        self.select.clicks = 1;
-      }
-      self.select.timer = setTimeout(function(){
-        self.select.timer = null;
-      }, 600);
-    } else {
-      self.select.clicks = ev.detail;
-    }
-
-    if (! ev.shiftKey){
-      self.clearSelectedText();
-
-      self.select.startPos = self.getCoords(ev);
-      self.select.startPos.y += self.ydisp;
-    }
-    self.select.endPos = self.getCoords(ev);
-    self.select.endPos.y += self.ydisp;
-    updateSelect();
-    copySelectToTextarea();
-    self.refresh(0, self.rows - 1);
-    self.select.selecting = true;
-  });
-  on(this.element, 'mousemove', function(ev) {
-    if(self.select.selecting){
-      self.select.endPos = self.getCoords(ev);
-      self.select.endPos.y += self.ydisp;
-      updateSelect();
-      self.refresh(0, self.rows - 1);
-    }
-  });
-  on(document, 'mouseup', function(ev) {
-    if(ev.button === 2){
-
-      var r = self.element.getBoundingClientRect();
-
-      var x = ev.pageX - r.left  + self.element.offsetLeft;
-      var y = ev.pageY - r.top  + self.element.offsetTop;
-
-      self._textarea.style.left = x - 1  + 'px';
-      self._textarea.style.top = y - 1 + 'px';
-      return;
-    }
-    if(self.select.selecting){
-      self.select.selecting = false;
-      copySelectToTextarea();
-    }
-  });
+  // var updateSelect = function(){
+  //   var startPos = self.select.startPos;
+  //   var endPos = self.select.endPos;
+  //
+  //   if(endPos.y < startPos.y || (startPos.y == endPos.y && endPos.x < startPos.x)){
+  //     var tmp = startPos;
+  //     startPos = endPos;
+  //     endPos = tmp;
+  //   }
+  //   if (self.select.clicks === 2){
+  //     var j = i;
+  //     var isMark = function(ch){
+  //       var code = ch.charCodeAt(0);
+  //       return (code <= 0x2f) || (0x3a <= code && code <= 0x40) || (0x5b <= code && code < 0x60) || (0x7b <= code && code <= 0x7f);
+  //     }
+  //     while (startPos.x > 0 && !isMark(self.lines[startPos.y][startPos.x-1][1])){
+  //       startPos.x--;
+  //     }
+  //     while (endPos.x < self.cols && !isMark(self.lines[endPos.y][endPos.x][1])){
+  //       endPos.x++;
+  //     }
+  //   }else if(self.select.clicks === 3){
+  //     startPos.x = 0;
+  //     endPos.y ++;
+  //     endPos.x = 0;
+  //   }
+  //
+  //   if (startPos.x === endPos.x && startPos.y === endPos.y){
+  //     self.clearSelectedText();
+  //   }else{
+  //     var x2 = self.select.endPos.x;
+  //     var y2 = self.select.endPos.y;
+  //     x2 --;
+  //     if(x2<0){
+  //       y2--;
+  //       x2 = self.cols - 1;
+  //     }
+  //     self.selectText(self.select.startPos.x, x2, self.select.startPos.y, y2);
+  //   }
+  // };
+  // var copySelectToTextarea = function (){
+  //     var textarea = self._textarea;
+  //     if (textarea) {
+  //
+  //       if (self.select.startPos.x === self.select.endPos.x && self.select.startPos.y === self.select.endPos.y){
+  //         textarea.value = "";
+  //         textarea.select();
+  //         return;
+  //       }
+  //
+  //       var x2 = self.select.endPos.x;
+  //       var y2 = self.select.endPos.y;
+  //       x2 --;
+  //       if(x2<0){
+  //         y2--;
+  //         x2 = self.cols - 1;
+  //       }
+  //
+  //       var value = self.grabText(self.select.startPos.x, x2, self.select.startPos.y, y2);
+  //       textarea.value = value;
+  //       textarea.select();
+  //     }
+  // };
+  // on(this.element, 'mousedown', function(ev) {
+  //
+  //   if(ev.button === 2){
+  //
+  //     var r = self.element.getBoundingClientRect();
+  //
+  //     var x = ev.pageX - r.left  + self.element.offsetLeft;
+  //     var y = ev.pageY - r.top  + self.element.offsetTop;
+  //
+  //     self._textarea.style.left = x  + 'px';
+  //     self._textarea.style.top = y  + 'px';
+  //     return;
+  //   }
+  //
+  //   if (ev.button != 0){
+  //     return;
+  //   }
+  //   if (navigator.userAgent.indexOf("Trident")){
+  //     /* IE does not hold click number as "detail" property. */
+  //     if (self.select.timer){
+  //       self.select.clicks ++;
+  //       clearTimeout(self.select.timer);
+  //       self.select.timer = null;
+  //     }else{
+  //       self.select.clicks = 1;
+  //     }
+  //     self.select.timer = setTimeout(function(){
+  //       self.select.timer = null;
+  //     }, 600);
+  //   } else {
+  //     self.select.clicks = ev.detail;
+  //   }
+  //
+  //   if (! ev.shiftKey){
+  //     self.clearSelectedText();
+  //
+  //     self.select.startPos = self.getCoords(ev);
+  //     self.select.startPos.y += self.ydisp;
+  //   }
+  //   self.select.endPos = self.getCoords(ev);
+  //   self.select.endPos.y += self.ydisp;
+  //   updateSelect();
+  //   copySelectToTextarea();
+  //   self.refresh(0, self.rows - 1);
+  //   self.select.selecting = true;
+  // });
+  // on(this.element, 'mousemove', function(ev) {
+  //   if(self.select.selecting){
+  //     self.select.endPos = self.getCoords(ev);
+  //     self.select.endPos.y += self.ydisp;
+  //     updateSelect();
+  //     self.refresh(0, self.rows - 1);
+  //   }
+  // });
+  // on(document, 'mouseup', function(ev) {
+  //   if(ev.button === 2){
+  //
+  //     var r = self.element.getBoundingClientRect();
+  //
+  //     var x = ev.pageX - r.left  + self.element.offsetLeft;
+  //     var y = ev.pageY - r.top  + self.element.offsetTop;
+  //
+  //     self._textarea.style.left = x - 1  + 'px';
+  //     self._textarea.style.top = y - 1 + 'px';
+  //     return;
+  //   }
+  //   if(self.select.selecting){
+  //     self.select.selecting = false;
+  //     copySelectToTextarea();
+  //   }
+  // });
 
 
   if (!('useEvents' in this.options) || this.options.useEvents) {
@@ -1529,10 +1528,9 @@ Terminal.prototype.refresh = function(start, end) {
     , row
     , parent;
 
-  var focused;
+  var focused = (Terminal.focus == this);
 
   if (end - start >= this.rows / 2) {
-    focused = (Terminal.focus == this);
     parent = this.element.parentNode;
     if (parent) parent.removeChild(this.element);
   }
@@ -1684,12 +1682,7 @@ Terminal.prototype.refresh = function(start, end) {
     this.children[y].innerHTML = out;
   }
 
-  if (parent) {
-    parent.appendChild(this.element);
-    if (focused) {
-      this.focus();
-    }
-  }
+  if (parent) parent.appendChild(this.element);
 
   if (this._textarea) {
     var cursorElement = this.element.querySelector('.terminal-cursor');
@@ -1699,8 +1692,12 @@ Terminal.prototype.refresh = function(start, end) {
       this._textarea.style.left = cursor_x + 'px';
       this._textarea.style.top = cursor_y + 'px';
     }
+    if (focused) {
+      this._textarea.focus();
+    }
+  } else if (focused) {
+    this.element.focus();
   }
-
 };
 
 Terminal.prototype._cursorBlink = function() {
@@ -3176,8 +3173,15 @@ Terminal.prototype.setgCharset = function(g, charset) {
 
 Terminal.prototype.keyPress = function(ev) {
   var key;
-  if (this._textarea) {
-    return;
+  if (this._textarea)
+  {
+    if (ev.target === this._textarea) {
+      return;
+    }
+    else
+    {
+      this._textarea.focus();
+    }
   }
 
   cancel(ev);
@@ -5340,6 +5344,8 @@ Terminal.prototype.clearSelectedText = function() {
       ox2 = ox1;
       ox1 = tmp;
     }
+
+    oy2 = Math.min(oy2, this.lines.length - 1);
 
     for (y = oy1; y <= oy2; y++) {
       x = 0;
