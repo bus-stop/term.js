@@ -1655,7 +1655,7 @@ Terminal.prototype.refresh = function(start, end) {
           if (ch <= ' ') {
             out += '&nbsp;';
           } else {
-            if (isWide(ch)) {
+            if (isWide(ch) || isSymbol(ch)) {
               i++;
               out += '<span style="display:inline-block; width:'
                       + this.characterWidth * 2 + 'px; height:'
@@ -6278,6 +6278,11 @@ function isFullWidth(c) {
            c >= 0xFF01 && c <= 0xFF60 ||
            c >= 0xFFE0 && c <= 0xFFE6;
 };
+
+function isSymbol(ch) {
+  var c = ch.charCodeAt(0);
+  return c >= 0x2600 && c <= 0x26FF;
+}
 
 function isWide(ch) {
   var c = ch.charCodeAt(0);
