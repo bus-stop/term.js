@@ -2903,6 +2903,12 @@ Terminal.prototype.pause = function() {
 Terminal.prototype.keyDown = function(ev) {
   var self = this
     , key;
+
+  if (this._textarea && ev.target !== this._textarea)
+  {
+    this._textarea.focus();
+  }
+
   switch (ev.keyCode) {
     // backspace
     case 8:
@@ -3173,15 +3179,9 @@ Terminal.prototype.setgCharset = function(g, charset) {
 
 Terminal.prototype.keyPress = function(ev) {
   var key;
-  if (this._textarea)
+  if (this._textarea && ev.target === this._textarea)
   {
-    if (ev.target === this._textarea) {
-      return;
-    }
-    else
-    {
-      this._textarea.focus();
-    }
+    return;
   }
 
   cancel(ev);
