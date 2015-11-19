@@ -3134,9 +3134,17 @@ Terminal.prototype.keyDown = function(ev) {
           key = '\x1b' + (ev.keyCode - 48);
         }
       } else if (ev.metaKey && !ev.shiftKey) {
-        if(ev.keyCode === 75) {
-          this.reset();
-          key = '\x0C';
+        if (ev.keyCode === 75) {
+          var j = this.rows - 1;
+
+          this.lines = [this.lines[this.ybase + this.y]];
+          while (j--)
+          {
+            this.lines.push(this.blankLine());
+          }
+          this.ybase = this.ydisp = this.y = 0;
+
+          this.refresh(0, this.rows - 1);
         }
       }
       break;
