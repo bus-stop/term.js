@@ -3135,7 +3135,7 @@ Terminal.prototype.keyDown = function(ev) {
         }
       } else if (ev.metaKey && !ev.shiftKey) {
         if(ev.keyCode === 75) {
-          this.write('\x1b[3J');
+          this.reset();
           key = '\x0C';
         }
       }
@@ -3607,16 +3607,21 @@ Terminal.prototype.eraseInDisplay = function(params) {
     case 1:
       this.eraseLeft(this.x, this.y);
       j = this.y;
-      while (j--) {
+      while (j--)
+      {
         this.eraseLine(j);
       }
       break;
     case 2:
       j = this.rows;
-      while (j--) this.eraseLine(j);
+      while (j--)
+      {
+        this.lines.push(this.blankLine());
+        this.ybase++;
+      }
       break;
     case 3:
-      this.reset(); // no saved lines
+      // no saved lines
       break;
   }
 };
@@ -4719,6 +4724,7 @@ Terminal.prototype.setPointerMode = function(params) {
 // http://vt100.net/docs/vt220-rm/table4-10.html
 Terminal.prototype.softReset = function(params) {
   this.cursorHidden = false;
+  this.cursorState = 1;
   this.insertMode = false;
   this.originMode = false;
   this.wraparoundMode = false; // autowrap
