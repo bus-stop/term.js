@@ -544,6 +544,7 @@ Terminal.prototype.initGlobal = function() {
   Terminal._boundDocs.push(document);
 
   Terminal.bindKeys(document);
+  Terminal.bindClick(document);
 
   if (this.useStyle) {
     Terminal.insertStyle(document, this.colors[256], this.colors[257]);
@@ -625,6 +626,27 @@ Terminal.bindKeys = function(document) {
     Terminal.focus.blur();
   });
 };
+
+Terminal.bindClick = function(document) {
+  on(document, 'click', function(ev) {
+    if (!Terminal.focus) return;
+    if (!ev.altKey) return;
+
+    var el = ev.target || ev.srcElement;
+    if (!el) return;
+    if (!el.parentNode) return;
+    if (!el.parentNode.parentNode) return;
+
+    do {
+      if (el === Terminal.focus.element)
+      {
+        var coords = Terminal.focus.getCoords(ev);
+        Terminal.focus.moveCursorTo(coords.x, coords.y);
+        break;
+      }
+    } while (el = el.parentNode);
+  });
+}
 
 /**
  * Copy Selection w/ Ctrl-C (Select Mode)
@@ -1095,8 +1117,8 @@ Terminal.prototype.getCoords = function(ev) {
   // convert to cols/rows
   w = self.element.clientWidth;
   h = self.element.clientHeight;
-  var cols = Math.floor((x / w) * self.cols);
-  var rows = Math.floor((y / h) * self.rows);
+  var cols = Math.trunc(x / self.characterWidth);
+  var rows = Math.trunc(y / self.characterHeight);
 
   // be sure to avoid sending
   // bad positions to the program
@@ -2939,6 +2961,10 @@ Terminal.prototype.keyDown = function(ev) {
       break;
     // left-arrow
     case 37:
+      if (ev.altKey) {
+        key = '\x1bb';
+        break;
+      }
       if (this.applicationCursor) {
         key = '\x1bOD'; // SS3 as ^[O for 7-bit
         //key = '\x8fD'; // SS3 as 0x8f for 8-bit
@@ -2952,6 +2978,10 @@ Terminal.prototype.keyDown = function(ev) {
       break;
     // right-arrow
     case 39:
+      if (ev.altKey) {
+        key = '\x1bf';
+        break;
+      }
       if (this.applicationCursor) {
         key = '\x1bOC';
         break;
@@ -3505,6 +3535,8 @@ Terminal.prototype.reset = function() {
   this.options.rows = this.rows;
   this.options.cols = this.cols;
   Terminal.call(this, this.options);
+  this.characterWidth = this.element.clientWidth / this.cols;
+  this.characterHeight = this.element.clientHeight / this.rows;
   this.refresh(0, this.rows - 1);
 };
 
@@ -6127,6 +6159,37 @@ Terminal.prototype.keySearch = function(ev, key) {
   }
 
   return false;
+};
+
+Terminal.prototype.moveCursorTo = function(x, y) {
+  var i = this.x,
+      j = this.y,
+      ch = '[';
+
+  if (this.applicationCursor) {
+    ch = 'O';
+  }
+
+  while (i < x)
+  {
+    this.handler('\x1b' + ch + 'C');
+    i++;
+  }
+  while (i > x)
+  {
+    this.handler('\x1b' + ch + 'D');
+    i--;
+  }
+  while (j < y)
+  {
+    this.handler('\x1b' + ch + 'B');
+    j++;
+  }
+  while (j > y)
+  {
+    this.handler('\x1b' + ch + 'A');
+    j--;
+  }
 };
 
 /**
