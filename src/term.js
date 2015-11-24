@@ -2904,11 +2904,6 @@ Terminal.prototype.keyDown = function(ev) {
   var self = this
     , key;
 
-  if (this._textarea && ev.target !== this._textarea)
-  {
-    this._textarea.focus();
-  }
-
   switch (ev.keyCode) {
     // backspace
     case 8:
