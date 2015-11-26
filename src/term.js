@@ -3615,6 +3615,7 @@ Terminal.prototype.cursorPos = function(params) {
     col = this.cols - 1;
   }
 
+  this.prevY = this.y;
   this.x = col;
   this.y = row;
 };
@@ -3648,7 +3649,7 @@ Terminal.prototype.eraseInDisplay = function(params) {
       }
       break;
     case 2:
-      j = this.rows;
+      j = this.prevY || this.rows;
       while (j--)
       {
         this.lines.push(this.blankLine());
