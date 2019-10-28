@@ -1,13 +1,34 @@
-# term.js
-
-A full xterm clone written in javascript. Used by
-[**tty.js**](https://github.com/chjj/tty.js).
+                           ████████╗███████╗██████╗ ███╗   ███╗        ██╗███████╗
+                           ╚══██╔══╝██╔════╝██╔══██╗████╗ ████║        ██║██╔════╝
+                              ██║   █████╗  ██████╔╝██╔████╔██║        ██║███████╗
+                              ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║   ██   ██║╚════██║
+                              ██║   ███████╗██║  ██║██║ ╚═╝ ██║██╗╚█████╔╝███████║
+                              ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝ ╚════╝ ╚══════╝
+<br>
+<p align="center">
+  <a href="https://github.com/bus-stop/term.js/tags">
+    <img src="https://img.shields.io/github/tag/bus-stop/term.js.svg?label=version&style=for-the-badge" alt="version">
+  </a>
+  <a href="https://github.com/bus-stop/term.js/stargazers">
+    <img src="https://img.shields.io/github/stars/bus-stop/term.js.svg?&style=for-the-badge" alt="stars">
+  </a>
+  <a href="https://github.com/bus-stop/term.js/network">
+    <img src="https://img.shields.io/github/forks/bus-stop/term.js.svg?style=for-the-badge" alt="forks">
+  </a>
+  <a href="https://david-dm.org/bus-stop/term.js?type=dev">
+    <img src="https://img.shields.io/david/dev/bus-stop/term.js.svg?label=devDependencies&style=for-the-badge" alt="devDependencies">
+  </a>
+</p>
+<h3 align="center">A terminal written in javascript.&nbsp;❤️</h3>
+<h5 align="center">A fork of <a href="https://github.com/chjj/term.js">chjj/term.js<a/></h5>
+<h6 align="center">Used by <a href="https://github.com/chjj/term.js">tty.js<a/></h6>
+<br>
 
 ## Example
 
 Server:
 
-``` js
+```js
 var term = require('term.js');
 app.use(term.middleware());
 ...
@@ -15,7 +36,7 @@ app.use(term.middleware());
 
 Client:
 
-``` js
+```js
 window.addEventListener('load', function() {
   var socket = io.connect();
   socket.on('connect', function() {
@@ -63,12 +84,12 @@ selection mode. To select text press `v` (or `space`) to enter visual mode, use
 for copy and paste. `y` (in visual mode) will work for copying only on X11
 systems. It will copy to the primary selection.
 
-Note: `Ctrl-C` will also work in prefix mode for the regular OS/browser
+>Note: `Ctrl-C` will also work in prefix mode for the regular OS/browser
 selection. If you want to select text with your mouse and copy it to the
 clipboard, simply select the text and type `Ctrl-A + Ctrl-C`, and
 `Ctrl-A + Ctrl-V` to paste it.
 
-For mac users: consider `Ctrl` to be `Command/Apple` above.
+For macOS users: consider `Ctrl` to be `Command/Apple` above.
 
 ## Contribution and License Agreement
 
@@ -78,4 +99,4 @@ all code is your original work. `</legalese>`
 
 ## License
 
-Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
+[![MIT](https://img.shields.io/badge/License-MIT-blue.svg?longCache=true&style=for-the-badge)](LICENSE)
